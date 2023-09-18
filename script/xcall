@@ -21,7 +21,7 @@ fi
 user=`whoami`
 
 # 获取当前所在的目录
-p_dir=$(dirname "$PWD")
+curr_dir=$PWD
 
 # 从 /etc/hosts 文件获取集群 host
 hosts=$(cat /etc/hosts | awk '$2!~/localhost/&&NF!=0{print $2}' | xargs)
@@ -29,5 +29,5 @@ hosts=$(cat /etc/hosts | awk '$2!~/localhost/&&NF!=0{print $2}' | xargs)
 # 遍历集群
 for host in $hosts; do
   echo -e "\e[92m ============================== $host ============================== \e[0m"
-  ssh $user@$host "cd $p_dir && $command"
+  ssh $user@$host "cd $curr_dir ; $command"
 done
