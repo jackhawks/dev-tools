@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#=======================================================================================================================
+#	查看整个集群的 jsp 进程
+#
+#	Version: 1.0.1
+#	Author: Jack
+#=======================================================================================================================
+
+# 自定义 hosts (例如: 'hadoop101,hadoop102,hadoop103')
+customize_hosts=''
+
+# 外部参数
+argument=$1
+
+# 判断参数个数和参数格式
+if [[ ! $# =~ (0|1) ]]; then
+  echo
+  echo -e "\e[91m The number of input parameters does not match, it can only be 0 or 1 parameter! \e[0m"
+  echo
+  exit 1
+elif [[ ! -z "$argument" && ! "$argument" =~ ^-.* ]]; then
+  echo
+  echo -e "\e[91m The input parameter format does not match! \e[0m"
+  echo
+  exit 1
+fi
+
+# 如果自定义的 hosts 变量为空, 那就从 /etc/hosts 文件中获取集群 hosts
+hosts=$(echo $customize_hosts | tr ',' ' ')
+
+if [[ $(echo $hosts | wc -w) == 0 ]]; then
+  hosts=$(cat /etc/hosts | awk '$2!~/localhost/&&NF!=0{print $2}' | xargs)
+fi
+
+# 遍历集群并执行命令
+for host in $hosts; do
+  echo -e "\e[92m ============================== $host ============================== \e[0m"
+  ssh $host jps $argument | grep -v 'Jps' | sort -k 2
+done

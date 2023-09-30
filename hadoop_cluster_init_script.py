@@ -186,22 +186,22 @@ for host in hosts:
                       connect_kwargs={'password': host['root_password']})
 
     # 上传 xsync
-    xsync_path = os.path.join(os.path.dirname(__file__), 'script', 'xsync')
+    xsync_path = os.path.join(os.path.dirname(__file__), 'sh-scripts', 'xsync')
     conn.put(xsync_path, '/bin')
     conn.run('chmod +x /bin/xsync')
 
     # 上传 jpsall
-    jpsall_path = os.path.join(os.path.dirname(__file__), 'script', 'jpsall')
+    jpsall_path = os.path.join(os.path.dirname(__file__), 'sh-scripts', 'jpsall')
     conn.put(jpsall_path, '/bin')
     conn.run('chmod +x /bin/jpsall')
 
-    # 上传 myhadoop.sh
-    myhadoop_path = os.path.join(os.path.dirname(__file__), 'script', 'myhadoop.sh')
+    # 上传 hadoop_cluster.sh
+    myhadoop_path = os.path.join(os.path.dirname(__file__), 'sh-scripts', 'hadoop_cluster.sh')
     conn.put(myhadoop_path, '/bin')
-    conn.run('chmod +x /bin/myhadoop.sh')
+    conn.run('chmod +x /bin/hadoop_cluster.sh')
 
     # 上传 xcall
-    xcall_path = os.path.join(os.path.dirname(__file__), 'script', 'xcall')
+    xcall_path = os.path.join(os.path.dirname(__file__), 'sh-scripts', 'xcall')
     conn.put(xcall_path, '/bin')
     conn.run('chmod +x /bin/xcall')
 

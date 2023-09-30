@@ -1,0 +1,66 @@
+#!/bin/bash
+
+#=======================================================================================================================
+#	集群文件批量分发脚本 rsync
+#
+#	Version: 1.0.0
+#	Author: Jack
+#=======================================================================================================================
+
+# 自定义 hosts (例如: 'hadoop101,hadoop102,hadoop103')
+customize_hosts=''
+
+# 外部参数
+files=$@
+
+# 判断参数个数
+if [[ $# < 1 ]]; then
+  echo
+  echo -e "\e[91m Not enough parameters! \e[0m"
+  echo
+  exit 1
+fi
+
+# 判断 rsync 是否安装，如果没有安装则执行安装命令
+if ! [ -x "`command -v rsync`" ]; then
+    yum install -y rsync
+fi
+
+# 如果自定义的 hosts 变量为空, 那就从 /etc/hosts 文件中获取集群 hosts
+hosts=$(echo $customize_hosts | tr ',' ' ')
+
+if [[ $(echo $hosts | wc -w) == 0 ]]; then
+  hosts=$(cat /etc/hosts | awk '$2!~/localhost/&&NF!=0{print $2}' | xargs)
+fi
+
+# 遍历集群并执行命令
+for host in $hosts; do
+
+  echo -e "\e[92m ============================== $host ============================== \e[0m"
+    # 遍历所有目录逐个发送
+    for file in $files; do
+
+      # 检测文件(包括目录)是否存在
+      if [ -e $file ]; then
+
+        # 获取父级目录
+        parent_dir=$(cd -P $(dirname $file); pwd)
+
+        # 获取当前文件的名称
+        file_name=$(basename $file)
+
+        # 拷贝
+        ssh $host "mkdir -p $parent_dir"
+        rsync -avl $parent_dir/$file_name $host:$parent_dir
+
+      else
+
+        echo
+        echo -e "\e[91m $file does not exists! \e[0m"
+        echo
+
+      fi
+
+    done
+
+done

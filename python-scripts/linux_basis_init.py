@@ -1,8 +1,11 @@
 #!/user/bin/env python
 # coding:utf-8
 
-"""
-Linux 新机器初始化脚本
+"""Linux 机器基础初始化脚本
+@Version    :   1.0.0
+@Author     :   Jack
+
+基础初始化集群中的所有机器
 
 1.安装基础软件
 2.关闭防火墙
@@ -15,7 +18,7 @@ from fabric import Connection
 
 hosts = [
     {
-        'dhcp_ip': '192.168.10.129',
+        'dhcp_ip': '192.168.10.134',
         'root_user': 'root',
         'root_password': '123456',
         'hostname': 'hadoop101',
@@ -23,8 +26,60 @@ hosts = [
         'gateway': '192.168.10.2',
         'hosts': [
             {
-                'static_ip': '192.168.10.101',
+                'static_ip': '192.168.10.134',
                 'hostname': 'hadoop101',
+            },
+            {
+                'static_ip': '192.168.10.135',
+                'hostname': 'hadoop102',
+            },
+            {
+                'static_ip': '192.168.10.136',
+                'hostname': 'hadoop103',
+            },
+        ],
+    },
+    {
+        'dhcp_ip': '192.168.10.135',
+        'root_user': 'root',
+        'root_password': '123456',
+        'hostname': 'hadoop102',
+        'static_ip': '192.168.10.102',
+        'gateway': '192.168.10.2',
+        'hosts': [
+            {
+                'static_ip': '192.168.10.134',
+                'hostname': 'hadoop101',
+            },
+            {
+                'static_ip': '192.168.10.135',
+                'hostname': 'hadoop102',
+            },
+            {
+                'static_ip': '192.168.10.136',
+                'hostname': 'hadoop103',
+            },
+        ],
+    },
+    {
+        'dhcp_ip': '192.168.10.136',
+        'root_user': 'root',
+        'root_password': '123456',
+        'hostname': 'hadoop103',
+        'static_ip': '192.168.10.103',
+        'gateway': '192.168.10.2',
+        'hosts': [
+            {
+                'static_ip': '192.168.10.134',
+                'hostname': 'hadoop101',
+            },
+            {
+                'static_ip': '192.168.10.135',
+                'hostname': 'hadoop102',
+            },
+            {
+                'static_ip': '192.168.10.136',
+                'hostname': 'hadoop103',
             },
         ],
     },
@@ -34,7 +89,7 @@ for host in hosts:
     conn = Connection(host['dhcp_ip'], user=host['root_user'], connect_kwargs={'password': host['root_password']})
 
     # 安装基础软件
-    conn.run('yum install -y vim rsync lrzsz wget ntp')
+    conn.run('yum install -y vim rsync lrzsz wget')
 
     # 关闭防火墙
     conn.run('systemctl stop firewalld && systemctl disable firewalld.service')
@@ -66,4 +121,5 @@ for host in hosts:
     # 重启
     conn.run('reboot', disown=True)
 
+    # 关闭连接
     conn.close()
