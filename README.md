@@ -1,2 +1,2 @@
-# bigdata-dev-helper
-大数据开发者的助手
+# dev-helper
+开发者助手
