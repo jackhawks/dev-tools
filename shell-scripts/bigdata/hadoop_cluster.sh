@@ -18,13 +18,13 @@ if [[ $# != 1 ]] || [[ ! "$argument" =~ (start|stop|restart) ]]; then
   exit 1
 fi
 
-# 从配置文件获取配置项
-hdfs_in_host=$(awk -F'[//:]' '/fs.defaultFS/{getline;print $4}' /opt/module/hadoop/etc/hadoop/core-site.xml)
-yarn_in_host=$(awk -F'[><]' '/yarn.resourcemanager.hostname/{getline;print $3}' /opt/module/hadoop/etc/hadoop/yarn-site.xml)
-history_server_in_host=$(awk -F'[>:]' '/mapreduce.jobhistory.address/{getline;print $2}' /opt/module/hadoop/etc/hadoop/mapred-site.xml)
-
 # 解决特殊情况下配置不生效问题
 source /etc/profile
+
+# 从配置文件获取配置项
+hdfs_in_host=$(awk -F'[//:]' '/fs.defaultFS/{getline;print $4}' $HADOOP_HOME/etc/hadoop/core-site.xml)
+yarn_in_host=$(awk -F'[><]' '/yarn.resourcemanager.hostname/{getline;print $3}' $HADOOP_HOME/etc/hadoop/yarn-site.xml)
+history_server_in_host=$(awk -F'[>:]' '/mapreduce.jobhistory.address/{getline;print $2}' $HADOOP_HOME/etc/hadoop/mapred-site.xml)
 
 # 遍历集群并执行命令
 case $1 in
