@@ -112,7 +112,8 @@ for host in hosts:
     # 解压 jdk 压缩包到 /opt/module 目录下
     jdk_file_name = os.path.basename(jdk_download_url)
     conn.sudo('mkdir -p /opt/module/jdk')
-    conn.sudo(f"tar -zxvf /opt/software/{jdk_file_name} --strip-component=1 -C /opt/module/jdk")
+    conn.sudo(f"chown -R {host['general_user']}:{host['general_user']} /opt/module/jdk")
+    conn.run(f"tar -zxvf /opt/software/{jdk_file_name} --strip-component=1 -C /opt/module/jdk")
 
     # 修改 env 环境变量文件
     my_env_path = '/etc/profile.d/my_env.sh'

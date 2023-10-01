@@ -54,7 +54,10 @@ case $argument in
       ssh $user@$host "$zk_path/bin/zkServer.sh start"
     done
 
-    sleep 3s
+    echo
+    echo " --------------- 等待 5s ---------------"
+    sleep 5s
+    echo
 
     for host in $hosts; do
       echo "--------------- 重启 => 正在启动 => $host ---------------"

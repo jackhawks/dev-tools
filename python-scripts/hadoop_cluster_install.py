@@ -104,7 +104,8 @@ for host in hosts:
     # 解压 hadoop 压缩包到 /opt/module 目录下
     hadoop_file_name = os.path.basename(hadoop_download_url)
     conn.sudo('mkdir -p /opt/module/hadoop')
-    conn.sudo(f"tar -zxvf /opt/software/{hadoop_file_name} --strip-component=1 -C /opt/module/hadoop")
+    conn.sudo(f"chown -R {host['general_user']}:{host['general_user']} /opt/module/hadoop")
+    conn.run(f"tar -zxvf /opt/software/{hadoop_file_name} --strip-component=1 -C /opt/module/hadoop")
 
     # 修改 env 环境变量文件
     my_env_path = '/etc/profile.d/my_env.sh'
@@ -119,7 +120,7 @@ for host in hosts:
     conn.run(f"sudo bash -c 'echo \"{hadoop_env}\" >> {my_env_path}'")
 
     # 使环境变量配置生效
-    conn.sudo('source /etc/profile')
+    conn.run('source /etc/profile')
 
     # 关闭连接
     conn.close()
@@ -243,6 +244,23 @@ for host in hosts:
     for host in host['hosts']:
         conn.run(f"echo '{host['hostname']}' >> $HADOOP_HOME/etc/hadoop/workers")
 
+    # 关闭连接
+    conn.close()
+
+# 上传基础脚本
+for host in hosts:
+    conn = Connection(host['static_ip'], user=host['root_user'],
+                      connect_kwargs={'password': host['root_password']})
+
+    # 上传 hadoop 集群脚本
+    hadoop_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'shell-scripts', 'bigdata',
+                               'hadoop_cluster.sh')
+    conn.put(hadoop_path, '/bin')
+    conn.run('chmod +x /bin/hadoop_cluster.sh')
+
+    # 关闭连接
+    conn.close()
+
 # 启动 Hadoop 集群
 for host in hosts:
 
@@ -259,6 +277,7 @@ for host in hosts:
         # 启动服务器
         conn.run('mapred --daemon start historyserver')
 
+        # 关闭连接
         conn.close()
 
     # 启动 yarn
@@ -268,4 +287,5 @@ for host in hosts:
 
         conn.run('$HADOOP_HOME/sbin/start-yarn.sh')
 
+        # 关闭连接
         conn.close()
