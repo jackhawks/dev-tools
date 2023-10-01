@@ -7,8 +7,14 @@
 #	Author: Jack
 #=======================================================================================================================
 
+# 自定义 hosts (例如: 'hadoop101,hadoop102,hadoop103')
+customize_hosts=''
+
 # 参数
 argument=$1
+
+# zk 目录地址
+zk_path="/opt/module/zookeeper"
 
 # 判断参数个数和参数格式 (start,stop,restart,status)
 if [[ $# != 1 ]] || [[ ! "$argument" =~ (start|stop|restart|status) ]]; then
@@ -18,11 +24,12 @@ if [[ $# != 1 ]] || [[ ! "$argument" =~ (start|stop|restart|status) ]]; then
   exit 1
 fi
 
-# 获取 zk 目录地址
-zk_path="/opt/module/*zookeeper*"
+# 如果自定义的 hosts 变量为空, 那就从 /etc/hosts 文件中获取集群 hosts
+hosts=$(echo $customize_hosts | tr ',' ' ')
 
-# 从 /etc/hosts 文件获取集群 hosts
-hosts=$(cat /etc/hosts | awk '$2!~/localhost/&&NF!=0{print $2}' | xargs)
+if [[ $(echo $hosts | wc -w) == 0 ]]; then
+  hosts=$(cat /etc/hosts | awk '$2!~/localhost/&&NF!=0{print $2}' | xargs)
+fi
 
 # 获取当前登录用户
 user=`whoami`
