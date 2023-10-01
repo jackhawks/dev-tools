@@ -94,8 +94,8 @@ for host in hosts:
     conn = Connection(host['static_ip'], user=host['general_user'],
                       connect_kwargs={'password': host['general_password']})
 
-    # jdk 地址
-    jdk_download_url = 'https://github.com/jackhawks/bigdata-dev-helper/releases/download/v1.0.0/jdk-8u212-linux-x64.tar.gz'
+    # jdk 下载地址
+    jdk_download_url = 'https://github.com/jackhawks/dev-helper/releases/download/v1.0.0/jdk-8u212-linux-x64.tar.gz'
 
     # 判断文件目录是否存在
     if conn.run('test -d /opt/software', warn=True).failed:
@@ -107,12 +107,12 @@ for host in hosts:
         conn.sudo(f"chown -R {host['general_user']}:{host['general_user']} /opt/module")
 
     # 下载 jdk 到 /opt/software 目录下
-    conn.run(f"wget -P /opt/software {jdk_download_url}")
+    conn.sudo(f"wget -P /opt/software {jdk_download_url}")
 
     # 解压 jdk 压缩包到 /opt/module 目录下
     jdk_file_name = os.path.basename(jdk_download_url)
     conn.sudo('mkdir -p /opt/module/jdk')
-    conn.run(f"tar -zxvf /opt/software/{jdk_file_name} --strip-component=1 -C /opt/module/jdk")
+    conn.sudo(f"tar -zxvf /opt/software/{jdk_file_name} --strip-component=1 -C /opt/module/jdk")
 
     # 修改 env 环境变量文件
     my_env_path = '/etc/profile.d/my_env.sh'
