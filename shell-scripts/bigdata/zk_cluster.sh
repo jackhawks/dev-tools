@@ -39,7 +39,7 @@ case $argument in
   ;;
 
   "stop") {
-    echo -e "\e[92m ============================== 停止 Zookeeper 集群 ============================== \e[0m"
+    echo -e "\e[91m ============================== 停止 Zookeeper 集群 ============================== \e[0m"
     for host in $hosts; do
       echo "--------------- 停止 $host ---------------"
       ssh $user@$host "$zk_path/bin/zkServer.sh stop"
@@ -48,7 +48,7 @@ case $argument in
   ;;
 
   "restart") {
-    echo -e "\e[92m ============================== 重启 Zookeeper 集群 ============================== \e[0m"
+    echo -e "\e[93m ============================== 重启 Zookeeper 集群 ============================== \e[0m"
     for host in $hosts; do
       echo "--------------- 重启 => 正在停止 => $host ---------------"
       ssh $user@$host "$zk_path/bin/zkServer.sh start"

@@ -42,7 +42,7 @@ case $1 in
   ;;
 
   "stop") {
-    echo -e "\e[93m ============================== 关闭 hadoop 集群 ============================== \e[0m"
+    echo -e "\e[91m ============================== 关闭 hadoop 集群 ============================== \e[0m"
     echo " --------------- 关闭 history server ---------------"
     ssh $history_server_in_host "$HADOOP_HOME/bin/mapred --daemon stop historyserver"
 
