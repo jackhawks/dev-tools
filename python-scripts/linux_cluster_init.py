@@ -104,7 +104,7 @@ for host in hosts:
     conn = Connection(host['dhcp_ip'], user=host['root_user'], connect_kwargs={'password': host['root_password']})
 
     # 安装基础软件
-    conn.run('yum install -y vim rsync lrzsz wget')
+    conn.run('yum install -y vim rsync lrzsz wget dnf')
 
     # 关闭防火墙
     conn.run('systemctl stop firewalld && systemctl disable firewalld.service')
