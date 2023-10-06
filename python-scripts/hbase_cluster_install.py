@@ -107,7 +107,7 @@ for index, host in enumerate(hosts):
 
     hbase_env = f"""\
     # HBASE_HOME
-    export JAVA_HOME=/opt/module/hbase
+    export HBASE_HOME=/opt/module/hbase
     export PATH=\\$PATH:\\$HBASE_HOME/bin\
     """.replace('    ', '')
 
@@ -126,43 +126,45 @@ for index, host in enumerate(hosts):
     for line in host['hosts']:
         hosts_array.append(line['hostname'])
 
-    hbase_site = f"""
+    hbase_site = f"""\
     <configuration>
         <property>
             <name>hbase.zookeeper.quorum</name>
             <value>{','.join(hosts_array)}</value>
         </property>
-        
+
         <property>
             <name>hbase.rootdir</name>
             <value>hdfs://{hosts_array[0]}:8020/hbase</value>
         </property>
-        
+
         <property>
             <name>hbase.cluster.distributed</name>
             <value>true</value>
         </property>
-    </configuration>
-    """.replace('\n', '\\n')
-    conn.run(f"sed -i '-->/a\\{hbase_site}' $HBASE_HOME/conf/hbase-site.xml")
+    </configuration>\
+    """.replace('    ', '')
+    conn.run(f"echo '{hbase_site}' >> $HBASE_HOME/conf/hbase-site.xml")
 
+    # regionservers
     regionservers = '\n'.join(hosts_array)
+    conn.run(f"echo '{regionservers}' > $HBASE_HOME/conf/regionservers")
 
-    conn.run(f"sudo bash -c 'echo \"{regionservers}\" > $HBASE_HOME/conf/regionservers'")
+    # 解决 HBase 和 Hadoop 的 log4j 兼容性问题
+    conn.run("mv $HBASE_HOME/lib/client-facing-thirdparty/slf4j-reload4j-1.7.33.jar "
+             "$HBASE_HOME/lib/client-facing-thirdparty/slf4j-reload4j-1.7.33.jar.bak")
 
     # 关闭连接
     conn.close()
 
-# 上传基础脚本
+# 启动 HBase 集群
 for host in hosts:
-    conn = Connection(host['static_ip'], user=host['root_user'],
-                      connect_kwargs={'password': host['root_password']})
 
-    # 上传 zk 集群脚本
-    zk_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'shell-scripts', 'bigdata',
-                           'zk_cluster.sh')
-    conn.put(zk_path, '/bin')
-    conn.run('chmod +x /bin/zk_cluster.sh')
+    if host['hostname'] == 'hadoop101':
+        conn = Connection(host['static_ip'], user=host['general_user'],
+                          connect_kwargs={'password': host['general_password']})
+        # 集群群启
+        conn.run(f"$HBASE_HOME/bin/start-hbase.sh")
 
-    # 关闭连接
-    conn.close()
+        # 关闭连接
+        conn.close()

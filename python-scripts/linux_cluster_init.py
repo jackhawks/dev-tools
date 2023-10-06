@@ -27,7 +27,7 @@ from fabric import Connection
 
 hosts = [
     {
-        'dhcp_ip': '192.168.10.134',
+        'dhcp_ip': '192.168.10.133',
         'root_user': 'root',
         'root_password': '123456',
         'general_user': 'jack',
@@ -51,7 +51,7 @@ hosts = [
         ],
     },
     {
-        'dhcp_ip': '192.168.10.135',
+        'dhcp_ip': '192.168.10.137',
         'root_user': 'root',
         'root_password': '123456',
         'general_user': 'jack',
@@ -75,7 +75,7 @@ hosts = [
         ],
     },
     {
-        'dhcp_ip': '192.168.10.136',
+        'dhcp_ip': '192.168.10.138',
         'root_user': 'root',
         'root_password': '123456',
         'general_user': 'jack',
