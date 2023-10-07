@@ -22,3 +22,6 @@
 |       linux_cluster_init.py       | Linux 集群大数据环境基础初始化脚本，根据指定的配置初始化集群中的所有机器 | 1.安装基础软件<br/>2.关闭防火墙<br/>3.修改主机名<br/>4.添加 hosts 映射<br/>5.配置静态 Ip<br/>6.创建工作目录<br/>7.创建普通用户<br/>8.配置 SSH 免密登录<br/>9.上传基础脚本 |
 | hbase_cluster_install.py | 根据指定的配置，一键安装 hbase 集群 | 需要基于<br/>```jdk_cluster_install.py```<br/>```zk_cluster.py``` |
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=jackhawks/dev-helper&type=Date)](https://star-history.com/#jackhawks/dev-helper&Date)
